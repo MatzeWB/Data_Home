@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Charts</title>
+    <meta charset="UTF-8">
+    <style>
+        .chart-container {
+            width: 90%;
+            margin: auto;
+        }
+        .chart-container:not(:last-of-type) {
+            margin-bottom: 100px;
+        }
+        .main-title {
+            text-align: center;
+            font-size: 72px;
+            margin-top: 20px;
+            margin-bottom: 50px;
+            visibility: visible;
+        }
+        h1.chart-header {
+            text-align: center;
+            font-size: 58px;
+            margin-bottom: 20px;
+            visibility: hidden;
+        }
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <!-- Include Chart.js date adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Chart.js annotation plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script>
+        async function fetchData(channel, apiKey, field) {
+            try {
+                const response = await fetch(`https://api.thingspeak.com/channels/${channel}/feeds.json?days=1&apikey=${apiKey}`);
+                const data = await response.json();
+                
+                return data.feeds.map(feed => ({
+                    x: new Date(feed.created_at),
+                    y: parseFloat(feed[field])
+                }));
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return [];
+            }
+        }
+
+        function calculateStepSize(data) {
+            const yValues = data.map(point => point.y);
+            const minY = Math.min(...yValues);
+            const maxY = Math.max(...yValues);
+            const rangeY = maxY - minY;
+
+            const desiredTicks = 5;
+            const stepSize = Math.max(1, Math.ceil(rangeY / desiredTicks));
+
+            return stepSize;
+        }
+
+        async function renderChartPower() {
+            const data = await fetchData(1927492, 'S0EWJ14ZBRUVTZ0O', 'field2');
+
+            const lastDataPoint = data[data.length - 1];
+
+            const headerPower = document.getElementById('chartHeaderPower');
+            headerPower.innerHTML = `Strom: ${lastDataPoint.y.toFixed(0)} W`;
+            headerPower.style.visibility = 'visible';
+
+            const stepSize = calculateStepSize(data);
+
+            const ctx = document.getElementById('myChartPower').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Power [W]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartGas() {
+            const data = await fetchData(1933511, '0L9MP1T81RBMXT1C', 'field2');
+
+            const lastDataPoint = data[data.length - 1];
+
+            const headerGas = document.getElementById('chartHeaderGas');
+            headerGas.innerHTML = `Gas: ${lastDataPoint.y.toFixed(2)} m<sup>3</sup>/10min`;
+            headerGas.style.visibility = 'visible';
+
+            const stepSize = calculateStepSize(data);
+
+            const ctx = document.getElementById('myChartGas').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Gas [m\u00B3/10min]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(2);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = function () {
+            renderChartPower();
+            renderChartGas();
+        };
+    </script>
+</head>
+<body>
+
+<!-- Main title for the page -->
+<h1 class="main-title">Verbrauch</h1>
+
+<!-- Header to display the last Power value using h1 -->
+<h1 id="chartHeaderPower" class="chart-header">Strom</h1>
+<div class="chart-container">
+    <canvas id="myChartPower" width="900" height="600"></canvas>
+</div>
+
+<!-- Header to display the last Gas value using h1 -->
+<h1 id="chartHeaderGas" class="chart-header">Gas</h1>
+<div class="chart-container">
+    <canvas id="myChartGas" width="900" height="600"></canvas>
+</div>
+
+</body>
+</html>
+
