@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Charts</title>
+    <meta charset="UTF-8">
+    <style>
+        .chart-container {
+            width: 90%;
+            margin: auto;
+        }
+        .chart-container:not(:last-of-type) {
+            margin-bottom: 120px; /* Increase the spacing between the charts slightly */
+        }
+        .main-title {
+            text-align: center;
+            font-size: 72px; /* Slightly larger font size for the main title */
+            margin-top: 20px;
+            margin-bottom: 50px; /* Increase margin-bottom for more distance below the main title */
+            visibility: visible; /* Ensure the main title is visible */
+        }
+        h1.chart-header {
+            text-align: center;
+            font-size: 58px; /* Increase the font size to 58 */
+            margin-bottom: 20px; /* Increase margin-bottom to 20 */
+            visibility: hidden; /* Hide the headers initially */
+        }
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <!-- Include Chart.js date adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Chart.js annotation plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script>
+        async function fetchData(field, days) {
+            try {
+                const response = await fetch(`https://api.thingspeak.com/channels/2841427/feeds.json?days=${days}&apikey=ELN7AALPJ599IZO4`);
+                const data = await response.json();
+                
+                return data.feeds.map(feed => ({
+                    x: new Date(feed.created_at),
+                    y: parseFloat(feed[field])
+                }));
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return [];
+            }
+        }
+
+        function calculateStepSize(data) {
+            const yValues = data.map(point => point.y);
+            const minY = Math.min(...yValues);
+            const maxY = Math.max(...yValues);
+            const rangeY = maxY - minY;
+
+            const desiredTicks = 5; // Desired number of ticks
+            const stepSize = Math.max(1, Math.ceil(rangeY / desiredTicks));
+
+            return stepSize;
+        }
+
+        async function renderChartRadon() {
+            const data = await fetchData('field1', 1); // Fetch data for the last 24 hours
+
+            const lastDataPoint = data[data.length - 1];
+
+            const headerRadon = document.getElementById('chartHeaderRadon');
+            headerRadon.innerText = `Radon-Level: ${lastDataPoint.y.toFixed(0)}`;
+            headerRadon.style.visibility = 'visible';
+
+            const stepSize = calculateStepSize(data);
+
+            const ctx = document.getElementById('myChartRadon').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        annotation: {
+                            annotations: {
+                                lineAt300: {
+                                    type: 'line',
+                                    yMin: 300,
+                                    yMax: 300,
+                                    borderColor: 'red',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: 'Threshold 300',
+                                        enabled: true,
+                                        position: 'start',
+                                        backgroundColor: 'rgba(255, 99, 132, 0.25)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                lineAt150: {
+                                    type: 'line',
+                                    yMin: 150,
+                                    yMax: 150,
+                                    borderColor: 'orange',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: 'Threshold 150',
+                                        enabled: true,
+                                        position: 'start',
+                                        backgroundColor: 'rgba(255, 165, 0, 0.25)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 400,
+                            title: {
+                                display: true,
+                                text: 'Radon-Level',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartRadon3Days() {
+            const data = await fetchData('field1', 3); // Fetch data for the last 3 days
+
+            const headerRadon3Days = document.getElementById('chartHeaderRadon3Days');
+            headerRadon3Days.innerText = `letzten 3 Tage`;
+            headerRadon3Days.style.visibility = 'visible';
+
+            const stepSize = calculateStepSize(data);
+
+            const ctx = document.getElementById('myChartRadon3Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        annotation: {
+                            annotations: {
+                                lineAt300: {
+                                    type: 'line',
+                                    yMin: 300,
+                                    yMax: 300,
+                                    borderColor: 'red',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: 'Threshold 300',
+                                        enabled: true,
+                                        position: 'start',
+                                        backgroundColor: 'rgba(255, 99, 132, 0.25)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                lineAt150: {
+                                    type: 'line',
+                                    yMin: 150,
+                                    yMax: 150,
+                                    borderColor: 'orange',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: 'Threshold 150',
+                                        enabled: true,
+                                        position: 'start',
+                                        backgroundColor: 'rgba(255, 165, 0, 0.25)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MM-DD'
+                                },
+                                tooltipFormat: 'MM-DD'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 400,
+                            title: {
+                                display: true,
+                                text: 'Radon-Level',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartRadon7Days() {
+            const data = await fetchData('field1', 7); // Fetch data for the last 7 days
+
+            const headerRadon7Days = document.getElementById('chartHeaderRadon7Days');
+            headerRadon7Days.innerText = `letzten 7 Tage`;
+            headerRadon7Days.style.visibility = 'visible';
+
+            const stepSize = calculateStepSize(data);
+
+            const ctx = document.getElementById('myChartRadon7Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        annotation: {
+                            annotations: {
+                                lineAt300: {
+                                    type: 'line',
+                                    yMin: 300,
+                                    yMax: 300,
+                                    borderColor: 'red',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: 'Threshold 300',
+                                        enabled: true,
+                                        position: 'start',
+                                        backgroundColor: 'rgba(255, 99, 132, 0.25)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                lineAt150: {
+                                    type: 'line',
+                                    yMin: 150,
+                                    yMax: 150,
+                                    borderColor: 'orange',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: 'Threshold 150',
+                                        enabled: true,
+                                        position: 'start',
+                                        backgroundColor: 'rgba(255, 165, 0, 0.25)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MM-DD'
+                                },
+                                tooltipFormat: 'MM-DD'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 400,
+                            title: {
+                                display: true,
+                                text: 'Radon-Level',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = function () {
+            renderChartRadon();
+            renderChartRadon3Days();
+            renderChartRadon7Days();
+        };
+    </script>
+</head>
+<body>
+
+<!-- Main title for the page -->
+<h1 class="main-title">B&uuml;ro</h1>
+
+<!-- Header to display the last Radon value -->
+<h1 id="chartHeaderRadon" class="chart-header">Radon</h1>
+<div class="chart-container">
+    <canvas id="myChartRadon" width="900" height="600"></canvas>
+</div>
+
+<!-- Header to display the last 3 days Radon value -->
+<h1 id="chartHeaderRadon3Days" class="chart-header">letzten 3 Tage</h1>
+<div class="chart-container">
+    <canvas id="myChartRadon3Days" width="900" height="600"></canvas>
+</div>
+
+<!-- Header to display the last 7 days Radon value -->
+<h1 id="chartHeaderRadon7Days" class="chart-header">letzten 7 Tage</h1>
+<div class="chart-container">
+    <canvas id="myChartRadon7Days" width="900" height="600"></canvas>
+</div>
+
+</body>
+</html>
+
