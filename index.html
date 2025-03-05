@@ -49,6 +49,11 @@
             color: blue;
             /* Set text color to blue */
         }
+
+        /* Hide the last column */
+        td:last-child, th:last-child {
+            display: none;
+        }
     </style>
 </head>
 
@@ -60,9 +65,8 @@
                 <th>Sensoren</th>
                 <th>Temp</th>
                 <th>Feuchte</th>
-                <th>CO<FONT SIZE="6">2</FONT>
-                </th>
-                <!--           <th>Zeit</th> -->
+                <th>CO<FONT SIZE="6">2</FONT></th>
+                <th>Zeit</th>
             </tr>
         </thead>
         <tbody>
@@ -71,106 +75,86 @@
                 <td>&nbsp;<span id="temp_out"></span></td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
-                <!--              <td>&nbsp;<span id="time_out"></span></td> -->
+                <td>&nbsp;<span id="time_out"></span></td>
             </tr>
             <tr id="row_WZ">
                 <td><b><a href="WZ.html" class="no-underline">Wohnzimmer</a></b></td>
                 <td>&nbsp;<span id="temp_WZ"></span></td>
                 <td>&nbsp;<span id="hum_WZ"></span>%</td>
                 <td>&nbsp;</td>
-                <!--             <td>&nbsp;<span id="time_WZ"></span></td> -->
+                <td>&nbsp;<span id="time_WZ"></span></td>
             </tr>
             <tr id="row_SZ">
                 <td><b><a href="SZ.html" class="no-underline">Schlafzimmer</a></b></td>
                 <td>&nbsp;<span id="temp_SZ"></span></td>
                 <td>&nbsp;<span id="hum_SZ"></span>%</td>
                 <td>&nbsp;<span id="co2_SZ"></span></td>
-                <!--           <td>&nbsp;<span id="temp_SZ_Time"></span></td> -->
+                <td>&nbsp;<span id="temp_SZ_Time"></span></td>
             </tr>
             <tr id="row_BadU">
                 <td><b><a href="BU.html" class="no-underline">Bad (unten)</a></b></td>
                 <td>&nbsp;<span id="temp_BadU"></span></td>
                 <td>&nbsp;<span id="hum_BadU"></span>%</td>
                 <td>&nbsp;</td>
-                <!--          <td>&nbsp;<span id="time_BadU"></span></td> -->
+                <td>&nbsp;<span id="time_BadU"></span></td>
             </tr>
             <tr id="row_AZ">
                 <td><b><a href="AZ.html" class="no-underline">Arbeitszimmer</a></b></td>
                 <td>&nbsp;<span id="temp_AZ"></span></td>
                 <td>&nbsp;<span id="hum_AZ"></span>%</td>
                 <td>&nbsp;</td>
-                <!--         <td>&nbsp;<span id="time_AZ"></span></td> -->
+                <td>&nbsp;<span id="time_AZ"></span></td>
             </tr>
             <tr id="row_B" style="border-bottom:2pt solid black;">
                 <td><b><a href="B.html" class="no-underline">B&uuml;ro</a></b></td>
                 <td>&nbsp;<span id="temp_B"></span></td>
                 <td>&nbsp;<span id="hum_B"></span>%</td>
                 <td>&nbsp;<span id="co2_B"></span></td>
-                <!--         <td>&nbsp;<span id="time_AZ"></span></td> -->
+                <td>&nbsp;<span id="time_B"></span></td>
             </tr>
             <tr id="row_WG">
                 <td><b><a href="WG.html" class="no-underline">Wintergarten</a></b></td>
                 <td>&nbsp;<span id="temp_WG"></span></td>
                 <td>&nbsp;<span id="hum_WG"></span>%</td>
                 <td>&nbsp;</td>
-                <!--         <td>&nbsp;<span id="time_WG"></span></td> -->
+                <td>&nbsp;<span id="time_WG"></span></td>
             </tr>
             <tr id="row_Keller">
                 <td><b><a href="K.html" class="no-underline">Keller</a></b></td>
                 <td>&nbsp;<span id="temp_Keller"></span></td>
                 <td>&nbsp;<span id="hum_Keller"></span>%</td>
                 <td>&nbsp;</td>
-                <!--         <td>&nbsp;<span id="time_Keller"></span></td> -->
+                <td>&nbsp;<span id="time_Keller"></span></td>
             </tr>
             <tr id="row_Schuppen" style="border-bottom:2pt solid black;">
                 <td><b><a href="S.html" class="no-underline">Schuppen</a></b></td>
                 <td>&nbsp;<span id="temp_Schuppen"></span></td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
-                <!--          <td>&nbsp;<span id="temp_Schuppen_Time"></span></td> -->
-
-
+                <td>&nbsp;<span id="temp_Schuppen_Time"></span></td>
+            </tr>
         </tbody>
     </table>
     <br />
     <br />
     <br />
 
-
     <table width=95% class="content-table">
         <tr>
         <tr style="border-bottom:2pt solid black;">
-            <th>
-                Gas
-            </th>
-            <th>
-                aktuell
-            </th>
-            <th>
-                Tag
-            </th>
-            <th>
-                Monat
-            </th>
-            <th>
-                <!--    Zeit -->
-            </th>
+            <th>Gas</th>
+            <th>aktuell</th>
+            <th>Tag</th>
+            <th>Monat</th>
+            <th><!-- Zeit --></th>
         </tr>
         <tr id="row_Radon" style="border-bottom:2pt solid black;">
             <td><b><a href="R.html" class="no-underline">Radon</a></b></td>
-            <td>
-                &nbsp;
-                <span id="radon_now"></span>
-            </td>
+            <td>&nbsp;<span id="radon_now"></span></td>
             <td>&nbsp;<span id="radon_day"></span></td>
             <td>&nbsp;<span id="radon_month"></span></td>
-            <td>&nbsp;
-                <!--       <span id="time_Radon"></span> -->
-            </td>
+            <td>&nbsp;<span id="time_Radon"></span></td>
         </tr>
-
-
-
     </table>
 
     <br />
@@ -179,23 +163,15 @@
     <table width=95% class="content-table">
         <tr>
             <td><b><a href="Verbrauch.html" class="no-underline">Strom</a></b></td>
-            <td>
-                <span id="power"></span> W
-            </td>
-            <td>
-                (VT:
-                <span id="power_vt"></span> kWh)
-            </td>
+            <td><span id="power"></span> W</td>
+            <td>(VT: <span id="power_vt"></span> kWh)</td>
+            <td>&nbsp;</td>
         </tr>
         <tr>
             <td><b><a href="Verbrauch.html" class="no-underline">Gas</a></b></td>
-            <td>
-                <span id="heat"></span> m&sup3/10min
-            </td>
-            <td>
-                (VT:
-                <span id="heat_vt"></span> m&sup3)
-            </td>
+            <td><span id="heat"></span> m&sup3/10min</td>
+            <td>(VT: <span id="heat_vt"></span> m&sup3)</td>
+            <td>&nbsp;</td>
         </tr>
     </table>
 
@@ -207,7 +183,8 @@
     <br />
     <br />
     <br />
-    <br /><br />
+    <br />
+    <br />
     <br />
     <br />
     <br />
@@ -230,9 +207,6 @@
     <div style="width:95%;padding-left: 0;padding-right: 0;margin-left: auto;margin-right: auto;display: block;">
         <canvas id="Einspeise_Chart"></canvas>
     </div>
-
-
-
 
     <script>
         // API URLs
@@ -282,23 +256,20 @@
             'Power_VT': 'https://api.thingspeak.com/channels/1967479/fields/1/last.json?api_key=SMC8MLG4MPL18AMQ',
             'Heat': 'https://api.thingspeak.com/channels/1933511/fields/2/last.json?api_key=M0GU27NYGAZ7CDEA',
             'Heat_VT': 'https://api.thingspeak.com/channels/1933511/fields/3/last.json?api_key=M0GU27NYGAZ7CDEA'
-
-
-
         };
 
         // Time limits for each sensor
         const timeLimits = {
             'row_out': 4000,
-            'row_WZ': 4000,
-            'row_SZ': 4000,
+            'row_WZ': 120,
+            'row_SZ': 120,
             'row_BadU': 120,
-            'row_AZ': 4000,
-            'row_B': 4000,
-            'row_WG': 4000,
-            'row_Keller': 4000,
+            'row_AZ': 120,
+            'row_B': 700,
+            'row_WG': 120,
+            'row_Keller': 400,
             'row_Schuppen': 4000,
-            'row_Radon': 4000
+            'row_Radon': 700
         };
 
         async function fetchData(url, elementId, field) {
@@ -324,8 +295,6 @@
             }
         }
 
-
-
         async function fetchTime(url, elementId) {
             try {
                 const response = await fetch(url);
@@ -345,39 +314,27 @@
         }
 
         async function highlightRowsIfOld(times) {
-            const [time_out, time_WZ, time_SZ, time_BadU, time_AZ, time_WG, time_Keller, time_Schuppen, time_Radon] = times;
+            const [time_out, time_WZ, time_SZ, time_BadU, time_AZ, time_B, time_WG, time_Keller, time_Schuppen, time_Radon] = times;
 
-            if (time_out !== "NA" && Number(time_out) > timeLimits['row_out']) {
-                document.getElementById('row_out').classList.add('old-data');
-            }
-            if (time_WZ !== "NA" && Number(time_WZ) > timeLimits['row_WZ']) {
-                document.getElementById('row_WZ').classList.add('old-data');
-            }
-            if (time_SZ !== "NA" && Number(time_SZ) > timeLimits['row_SZ']) {
-                document.getElementById('row_SZ').classList.add('old-data');
-            }
-            if (time_BadU !== "NA" && Number(time_BadU) > timeLimits['row_BadU']) {
-                document.getElementById('row_BadU').classList.add('old-data');
-            }
-            if (time_AZ !== "NA" && Number(time_AZ) > timeLimits['row_AZ']) {
-                document.getElementById('row_AZ').classList.add('old-data');
-            }
-            if (time_B !== "NA" && Number(time_B) > timeLimits['row_B']) {
-                document.getElementById('row_B').classList.add('old-data');
-            }
-            if (time_WG !== "NA" && Number(time_WG) > timeLimits['row_WG']) {
-                document.getElementById('row_WG').classList.add('old-data');
-            }
-            if (time_Keller !== "NA" && Number(time_Keller) > timeLimits['row_Keller']) {
-                document.getElementById('row_Keller').classList.add('old-data');
-            }
-            if (time_Schuppen !== "NA" && Number(time_Schuppen) > timeLimits['row_Schuppen']) {
-                document.getElementById('row_Schuppen').classList.add('old-data');
-            }
-            if (time_Radon !== "NA" && Number(time_Radon) > timeLimits['row_Radon']) {
-                document.getElementById('row_Radon').classList.add('old-data');
-            }
+            const rows = {
+                'row_out': time_out,
+                'row_WZ': time_WZ,
+                'row_SZ': time_SZ,
+                'row_BadU': time_BadU,
+                'row_AZ': time_AZ,
+                'row_B': time_B,
+                'row_WG': time_WG,
+                'row_Keller': time_Keller,
+                'row_Schuppen': time_Schuppen,
+                'row_Radon': time_Radon
+            };
 
+            Object.entries(rows).forEach(([rowId, timeValue]) => {
+                console.log(`Row: ${rowId}, Time: ${timeValue}, Limit: ${timeLimits[rowId]}`);
+                if (timeValue !== "NA" && Number(timeValue) > timeLimits[rowId]) {
+                    document.getElementById(rowId).classList.add('old-data');
+                }
+            });
         }
 
         // Fetch data for each sensor and highlight rows if data is old
@@ -408,7 +365,6 @@
                 fetchData(api_urls.Power_VT, 'power_vt', 'field1'),
                 fetchData(api_urls.Heat, 'heat', 'field2'),
                 fetchData(api_urls.Heat_VT, 'heat_vt', 'field3')
-
             ];
 
             const fetchTimePromises = [
@@ -466,7 +422,6 @@
                     }
                 }
             });
-
         }
 
         async function getStromVerbrauchData() {
@@ -505,7 +460,6 @@
                     }
                 }
             });
-
         }
 
         async function getStromEinspeisungData() {
@@ -544,10 +498,7 @@
                     }
                 }
             });
-
         }
-
-
 
         getHeatVerbrauchData();
         getStromVerbrauchData();
@@ -558,3 +509,4 @@
 </body>
 
 </html>
+
