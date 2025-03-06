@@ -74,25 +74,47 @@
 
             const ctx = document.getElementById('myChartPower').getContext('2d');
 
-            const dataset = data.map(point => ({
+            const positiveData = data.map((point, index) => ({
                 x: point.x,
-                y: point.y,
+                y: point.y >= 0 ? point.y : null,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 1)'
+            }));
+
+            const negativeData = data.map((point, index) => ({
+                x: point.x,
+                y: point.y < 0 ? point.y : null,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 1)'
             }));
 
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    datasets: [{
-                        label: '',
-                        data: dataset,
-                        borderColor: dataset.map(point => point.y < 0 ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)'),
-                        pointBackgroundColor: dataset.map(point => point.y < 0 ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)'),
-                        borderWidth: 3,
-                        fill: false,
-                        tension: 0.4,
-                        pointRadius: 3, // Reduced point radius
-                        pointHoverRadius: 5 // Optional: Adjust hover radius for better visibility
-                    }]
+                    datasets: [
+                        {
+                            label: '',
+                            data: positiveData,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 3, // Reduced point radius
+                            pointHoverRadius: 5 // Optional: Adjust hover radius for better visibility
+                        },
+                        {
+                            label: '',
+                            data: negativeData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 3, // Reduced point radius
+                            pointHoverRadius: 5 // Optional: Adjust hover radius for better visibility
+                        }
+                    ]
                 },
                 options: {
                     plugins: {
