@@ -133,6 +133,13 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;<span id="temp_Schuppen_Time"></span></td>
             </tr>
+            <tr id="row_Pool" style="border-bottom:2pt solid black;">
+                <td><b><a href="S.html" class="no-underline">Pool</a></b></td>
+                <td>&nbsp;<span id="temp_Pool"></span></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;<span id="time_Pool"></span></td>
+            </tr>
         </tbody>
     </table>
     <br />
@@ -242,6 +249,9 @@
             'temp_Schuppen': 'https://api.thingspeak.com/channels/1687414/fields/1/last.json?api_key=BTPWE1MJR9CLOT1T',
             'temp_Schuppen_Time': 'https://api.thingspeak.com/channels/1687414/fields/1/last_data_age.json?api_key=BTPWE1MJR9CLOT1T',
 
+            'temp_Pool': 'https://api.thingspeak.com/channels/1815938/fields/1/last.json?api_key=X9G7JHVHQOUVOLKZ',
+            'time_Pool': 'https://api.thingspeak.com/channels/1815938/fields/1/last_data_age.json?api_key=X9G7JHVHQOUVOLKZ',
+
             'Radon_now': 'https://api.thingspeak.com/channels/2841427/fields/1/last.json?api_key=ELN7AALPJ599IZO4',
             'Radon_day': 'https://api.thingspeak.com/channels/2841427/fields/2/last.json?api_key=ELN7AALPJ599IZO4',
             'Radon_month': 'https://api.thingspeak.com/channels/2841427/fields/3/last.json?api_key=ELN7AALPJ599IZO4',
@@ -269,6 +279,7 @@
             'row_WG': 120,
             'row_Keller': 400,
             'row_Schuppen': 4000,
+            'row_Pool': 4000,
             'row_Radon': 700
         };
 
@@ -314,7 +325,7 @@
         }
 
         async function highlightRowsIfOld(times) {
-            const [time_out, time_WZ, time_SZ, time_BadU, time_AZ, time_B, time_WG, time_Keller, time_Schuppen, time_Radon] = times;
+            const [time_out, time_WZ, time_SZ, time_BadU, time_AZ, time_B, time_WG, time_Keller, time_Schuppen, time_Pool, time_Radon] = times;
 
             const rows = {
                 'row_out': time_out,
@@ -326,6 +337,7 @@
                 'row_WG': time_WG,
                 'row_Keller': time_Keller,
                 'row_Schuppen': time_Schuppen,
+                'row_Pool': time_Pool,
                 'row_Radon': time_Radon
             };
 
@@ -358,6 +370,7 @@
                 fetchData(api_urls.temp_Keller, 'temp_Keller', 'field1'),
                 fetchData(api_urls.hum_Keller, 'hum_Keller', 'field2'),
                 fetchData(api_urls.temp_Schuppen, 'temp_Schuppen', 'field1'),
+                fetchData(api_urls.temp_Pool, 'temp_Pool', 'field1'),
                 fetchData(api_urls.Radon_now, 'radon_now', 'field1'),
                 fetchData(api_urls.Radon_day, 'radon_day', 'field2'),
                 fetchData(api_urls.Radon_month, 'radon_month', 'field3'),
@@ -377,6 +390,7 @@
                 fetchTime(api_urls.time_WG, 'time_WG'),
                 fetchTime(api_urls.time_Keller, 'time_Keller'),
                 fetchTime(api_urls.temp_Schuppen_Time, 'temp_Schuppen_Time'),
+                fetchTime(api_urls.time_Pool, 'time_Pool'),
                 fetchTime(api_urls.time_radon, 'time_Radon')
             ];
 
