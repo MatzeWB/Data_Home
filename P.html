@@ -36,7 +36,7 @@
     <script>
         async function fetchData(field) {
             try {
-                const response = await fetch('https://api.thingspeak.com/channels/1815938/feeds.json?days=4&apikey=X9G7JHVHQOUVOLKZ');
+                const response = await fetch('https://api.thingspeak.com/channels/1815938/feeds.json?days=1&apikey=X9G7JHVHQOUVOLKZ');
                 const data = await response.json();
                 
                 return data.feeds.map(feed => ({
