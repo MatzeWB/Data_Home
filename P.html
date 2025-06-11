@@ -36,13 +36,16 @@
     <script>
         async function fetchData(field) {
             try {
-                const response = await fetch('https://api.thingspeak.com/channels/1815938/feeds.json?days=1&apikey=X9G7JHVHQOUVOLKZ');
+                const response = await fetch('https://api.thingspeak.com/channels/1815938/feeds.json?days=7&apikey=X9G7JHVHQOUVOLKZ');
                 const data = await response.json();
-                
-                return data.feeds.map(feed => ({
-                    x: new Date(feed.created_at),
-                    y: parseFloat(feed[field])
-                }));
+
+                // Map data and filter out invalid temperature values (-127)
+                return data.feeds
+                    .map(feed => ({
+                        x: new Date(feed.created_at),
+                        y: parseFloat(feed[field])
+                    }))
+                    .filter(point => point.y !== -127); // Exclude invalid values
             } catch (error) {
                 console.error('Error fetching data:', error);
                 return [];
@@ -60,8 +63,6 @@
 
             return stepSize;
         }
-
-        
 
         async function renderChartTemperature() {
             const data = await fetchData('field1'); // Read data from field1
@@ -85,7 +86,6 @@
                         borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
                         borderWidth: 3, // Increase borderWidth to 6
                         fill: false,
-                        // pointRadius: 0
                         tension: 0.4
                     }]
                 },
@@ -128,7 +128,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: 'Temperatur [°C]', 
+                                text: 'Temperatur [°C]',
                                 font: {
                                     size: 40, // Increase font size to 40
                                     color: 'black'
@@ -155,8 +155,6 @@
             });
         }
 
-        
-
         window.onload = function () {
             renderChartTemperature();
         };
@@ -167,13 +165,11 @@
 <!-- Main title for the page -->
 <h1 class="main-title">Pool</h1>
 
-
 <!-- Header to display the last Temperature value using h1 -->
 <h1 id="chartHeaderTemperature" class="chart-header">Temperatur</h1>
 <div class="chart-container">
     <canvas id="myChartTemperature" width="900" height="600"></canvas>
 </div>
-
 
 </body>
 </html>
