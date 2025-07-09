@@ -34,9 +34,9 @@
     <!-- Include Chart.js annotation plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
     <script>
-        async function fetchData(field) {
+        async function fetchData(field, days) {
             try {
-                const response = await fetch('https://api.thingspeak.com/channels/1815938/feeds.json?days=7&apikey=X9G7JHVHQOUVOLKZ');
+                const response = await fetch(`https://api.thingspeak.com/channels/1815938/feeds.json?days=${days}&apikey=X9G7JHVHQOUVOLKZ`);
                 const data = await response.json();
 
                 // Map data and filter out invalid temperature values (-127)
@@ -65,7 +65,7 @@
         }
 
         async function renderChartTemperature() {
-            const data = await fetchData('field1'); // Read data from field1
+            const data = await fetchData('field1', 7); // Read data from field1 for the last 7 days
 
             const lastDataPoint = data[data.length - 1];
 
@@ -155,8 +155,93 @@
             });
         }
 
+        async function renderChartTemperature14Days() {
+            const data = await fetchData('field1', 21); // Read data from field1 for the last 14 days
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartTemperature14Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for 14-day chart
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperatur [°C]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                stepSize: stepSize,
+                                callback: function(value, index, values) {
+                                    return value.toFixed(1);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         window.onload = function () {
             renderChartTemperature();
+            renderChartTemperature14Days();
         };
     </script>
 </head>
@@ -169,6 +254,11 @@
 <h1 id="chartHeaderTemperature" class="chart-header">Temperatur</h1>
 <div class="chart-container">
     <canvas id="myChartTemperature" width="900" height="600"></canvas>
+</div>
+
+<!-- Additional chart for 14 days -->
+<div class="chart-container">
+    <canvas id="myChartTemperature14Days" width="900" height="600"></canvas>
 </div>
 
 </body>
