@@ -141,7 +141,7 @@
                                 },
                                 stepSize: stepSize, // Set dynamic step size
                                 callback: function(value, index, values) {
-                                    return value.toFixed(0); // no decimal place
+                                    return value.toFixed(1); // one decimal place
                                 }
                             },
                             grid: {
@@ -251,7 +251,7 @@
         }
 
         async function renderChartHumidity7Days() {
-            const data = await fetchData('field3', 1); // Read data from field3 for the last 7 days
+            const data = await fetchData('field3', 7); // Read data from field3 for the last 7 days
 
             const lastDataPoint = data[data.length - 1];
 
@@ -603,7 +603,7 @@
                                 },
                                 stepSize: stepSize,
                                 callback: function(value, index, values) {
-                                    return value.toFixed(0);
+                                    return value.toFixed(1);
                                 }
                             },
                             grid: {
