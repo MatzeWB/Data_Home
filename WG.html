@@ -141,7 +141,7 @@
                                 },
                                 stepSize: stepSize, // Set dynamic step size
                                 callback: function(value, index, values) {
-                                    return value.toFixed(1); // One decimal place
+                                    return value.toFixed(0); // no decimal place
                                 }
                             },
                             grid: {
@@ -263,7 +263,7 @@
                     datasets: [{
                         label: '',
                         data: data,
-                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for 3-day chart
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 3-day chart
                         borderWidth: 3,
                         fill: false,
                         tension: 0.4
@@ -321,7 +321,7 @@
                                 },
                                 stepSize: stepSize,
                                 callback: function(value, index, values) {
-                                    return value.toFixed(1);
+                                    return value.toFixed(0);
                                 }
                             },
                             grid: {
@@ -348,7 +348,7 @@
                     datasets: [{
                         label: '',
                         data: data,
-                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for 3-day chart
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 3-day chart
                         borderWidth: 3,
                         fill: false,
                         tension: 0.4
@@ -406,7 +406,7 @@
                                 },
                                 stepSize: stepSize,
                                 callback: function(value, index, values) {
-                                    return value.toFixed(1);
+                                    return value.toFixed(0);
                                 }
                             },
                             grid: {
@@ -419,6 +419,9 @@
                 }
             });
         }
+
+        
+
 
 
         window.onload = function () {
@@ -455,6 +458,8 @@
 <div class="chart-container">
     <canvas id="myChartTemperature7Days" width="900" height="600"></canvas>
 </div>
+
+
 
 </body>
 </html>
