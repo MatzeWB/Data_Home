@@ -34,15 +34,18 @@
     <!-- Include Chart.js annotation plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
     <script>
-        async function fetchData(field) {
+        async function fetchData(field, days) {
             try {
-                const response = await fetch('https://api.thingspeak.com/channels/2826784/feeds.json?days=1&apikey=NAOV5H2S8G4E6REJ');
+                const response = await fetch(`https://api.thingspeak.com/channels/2826784/feeds.json?days=${days}&apikey=NAOV5H2S8G4E6REJ`);
                 const data = await response.json();
-                
-                return data.feeds.map(feed => ({
-                    x: new Date(feed.created_at),
-                    y: parseFloat(feed[field])
-                }));
+
+                // Map data and filter out invalid temperature values (-127)
+                return data.feeds
+                    .map(feed => ({
+                        x: new Date(feed.created_at),
+                        y: parseFloat(feed[field])
+                    }))
+                    .filter(point => point.y !== -127); // Exclude invalid values
             } catch (error) {
                 console.error('Error fetching data:', error);
                 return [];
@@ -61,99 +64,8 @@
             return stepSize;
         }
 
-        async function renderChartDruck() {
-            const data = await fetchData('field4');
-
-            const lastDataPoint = data[data.length - 1];
-
-            // Update the header with the last value (no decimal places) and " hPa"
-            const headerDruck = document.getElementById('chartHeaderDruck');
-            headerDruck.innerHTML = `Luftdruck: ${Math.round(lastDataPoint.y)} hPa`;
-            headerDruck.style.visibility = 'visible'; // Show the header
-
-            const stepSize = calculateStepSize(data); // Calculate dynamic step size
-
-            const ctx = document.getElementById('myChartDruck').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: '',
-                        data: data,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 3, // Increase borderWidth to 6
-                        fill: false,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                displayFormats: {
-                                    hour: 'HH:mm'
-                                },
-                                tooltipFormat: 'HH:mm'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Time',
-                                font: {
-                                    size: 40, // Increase font size to 40
-                                    color: 'black'
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 25, // Increase font size to 25
-                                    color: 'black'
-                                }
-                            },
-                            grid: {
-                                drawBorder: true,
-                                borderColor: 'black',
-                                borderWidth: 3
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Luftdruck [hPa]', 
-                                font: {
-                                    size: 40, // Increase font size to 40
-                                    color: 'black'
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 25, // Increase font size to 25
-                                    color: 'black'
-                                },
-                                stepSize: stepSize, // Set dynamic step size
-                                callback: function(value, index, values) {
-                                    return value.toFixed(0); // No decimal places
-                                }
-                            },
-                            grid: {
-                                drawBorder: true,
-                                borderColor: 'black',
-                                borderWidth: 3
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        async function renderChartTemperature() {
-            const data = await fetchData('field1'); // Read data from field1
+        async function renderChartTemperature1Day() {
+            const data = await fetchData('field1', 1); // Read data from field1 for the last 1 day
 
             const lastDataPoint = data[data.length - 1];
 
@@ -164,7 +76,7 @@
 
             const stepSize = calculateStepSize(data); // Calculate dynamic step size
 
-            const ctx = document.getElementById('myChartTemperature').getContext('2d');
+            const ctx = document.getElementById('myChartTemperature1Day').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -174,7 +86,6 @@
                         borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
                         borderWidth: 3, // Increase borderWidth to 6
                         fill: false,
-                        // pointRadius: 0
                         tension: 0.4
                     }]
                 },
@@ -217,7 +128,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: 'Temperatur [°C]', 
+                                text: 'Temperatur [°C]',
                                 font: {
                                     size: 40, // Increase font size to 40
                                     color: 'black'
@@ -230,7 +141,7 @@
                                 },
                                 stepSize: stepSize, // Set dynamic step size
                                 callback: function(value, index, values) {
-                                    return value.toFixed(1); // One decimal place
+                                    return value.toFixed(0); // no decimal place
                                 }
                             },
                             grid: {
@@ -244,19 +155,24 @@
             });
         }
 
-        async function renderChartHumidity() {
-            const data = await fetchData('field3'); // Read data from field3
+
+        async function renderChartHumidity1Day() {
+            const data = await fetchData('field3', 1); // Read data from field2 for the last 1 day
 
             const lastDataPoint = data[data.length - 1];
 
-            // Update the header with the last value (no decimal places) and " %"
+                 // Update the header with the last value (one decimal place) and "°C"
             const headerHumidity = document.getElementById('chartHeaderHumidity');
-            headerHumidity.innerText = `Luftfeuchtigkeit: ${Math.round(lastDataPoint.y)} %`;
+            headerHumidity.innerText = `Luftfeuchtigkeit: ${lastDataPoint.y.toFixed(0)}%`;
             headerHumidity.style.visibility = 'visible'; // Show the header
+
+            
+
+           
 
             const stepSize = calculateStepSize(data); // Calculate dynamic step size
 
-            const ctx = document.getElementById('myChartHumidity').getContext('2d');
+            const ctx = document.getElementById('myChartHumidity1Day').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -334,10 +250,384 @@
             });
         }
 
+        async function renderChartHumidity7Days() {
+            const data = await fetchData('field3', 1); // Read data from field3 for the last 7 days
+
+            const lastDataPoint = data[data.length - 1];
+
+                 // Update the header with the last value (one decimal place) and "°C"
+            const headerHumidity = document.getElementById('chartHeaderHumidity');
+            headerHumidity.innerText = `Luftfeuchtigkeit: ${lastDataPoint.y.toFixed(0)}%`;
+            headerHumidity.style.visibility = 'visible'; // Show the header
+
+            
+
+           
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartHumidity7Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for humidity chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Luftfeuchtigkeit [%]', 
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0); // No decimal places
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartPressure1Day() {
+            const data = await fetchData('field4', 1); // Read data from field2 for the last 1 day
+
+            const lastDataPoint = data[data.length - 1];
+
+                 // Update the header with the last value (one decimal place) and "°C"
+            const headerPressure = document.getElementById('chartHeaderPressure');
+            headerPressure.innerText = `Luftdruck: ${lastDataPoint.y.toFixed(0)} hPa`;
+            headerPressure.style.visibility = 'visible'; // Show the header
+
+                      
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartPressure1Day').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)', // Different color for pressure chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Luftdruck [hPa]', 
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0); // No decimal places
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartPressure7Days() {
+            const data = await fetchData('field4', 7); // Read data from field4 for the last 7 days
+
+            const lastDataPoint = data[data.length - 1];
+
+                 // Update the header with the last value (one decimal place) and "°C"
+            const headerPressure = document.getElementById('chartHeaderPressure');
+            headerPressure.innerText = `Luftdruck: ${lastDataPoint.y.toFixed(0)} hPa`;
+            headerPressure.style.visibility = 'visible'; // Show the header
+
+                      
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartPressure7Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)', // Different color for pressure chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Luftdruck [hPa]', 
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0); // No decimal places
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+
+        
+
+        async function renderChartTemperature7Days() {
+            const data = await fetchData('field1', 7); // Read data from field1 for the last 7 days
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartTemperature7Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 3-day chart
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperatur [°C]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                stepSize: stepSize,
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        
+
+
+
         window.onload = function () {
-            renderChartDruck();
-            renderChartTemperature();
-            renderChartHumidity();
+            renderChartTemperature1Day();
+            renderChartHumidity1Day();
+            renderChartPressure1Day();
+            renderChartTemperature7Days();
+            renderChartHumidity7Days();
+            renderChartPressure7Days();
         };
     </script>
 </head>
@@ -349,20 +639,41 @@
 <!-- Header to display the last Temperature value using h1 -->
 <h1 id="chartHeaderTemperature" class="chart-header">Temperatur</h1>
 <div class="chart-container">
-    <canvas id="myChartTemperature" width="900" height="600"></canvas>
+    <canvas id="myChartTemperature1Day" width="900" height="600"></canvas>
 </div>
 
-<!-- Header to display the last Humidity value using h1 -->
+<!-- Header to display the last Humididty value using h1 -->
 <h1 id="chartHeaderHumidity" class="chart-header">Luftfeuchtigkeit</h1>
 <div class="chart-container">
-    <canvas id="myChartHumidity" width="900" height="600"></canvas>
+    <canvas id="myChartHumidity1Day" width="900" height="600"></canvas>
 </div>
 
-<!-- Header to display the last Luftdruck value using h1 -->
-<h1 id="chartHeaderDruck" class="chart-header">Luftdruck</h1>
+<!-- Header to display the last Pressure value using h1 -->
+<h1 id="chartHeaderPressure" class="chart-header">Luftdruck</h1>
 <div class="chart-container">
-    <canvas id="myChartDruck" width="900" height="600"></canvas>
+    <canvas id="myChartPressure1Day" width="900" height="600"></canvas>
 </div>
+
+
+
+
+
+<!-- Additional chart for 7 days -->
+<div class="chart-container">
+    <canvas id="myChartTemperature7Days" width="900" height="600"></canvas>
+</div>
+
+<!-- Additional chart for 7 days -->
+<div class="chart-container">
+    <canvas id="myChartHumidity7Days" width="900" height="600"></canvas>
+</div>
+
+<!-- Additional chart for 7 days -->
+<div class="chart-container">
+    <canvas id="myChartPressure7Days" width="900" height="600"></canvas>
+</div>
+
+
 
 </body>
 </html>
