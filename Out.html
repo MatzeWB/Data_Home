@@ -160,12 +160,12 @@
 
         
 
-        async function renderChartTemperature7Days() {
-            const data = await fetchData('field1', 7); // Read data from field1 for the last 7 days
+        async function renderChartTemperature3Days() {
+            const data = await fetchData('field1', 3); // Read data from field1 for the last 3 days
 
             const stepSize = calculateStepSize(data); // Calculate dynamic step size
 
-            const ctx = document.getElementById('myChartTemperature7Days').getContext('2d');
+            const ctx = document.getElementById('myChartTemperature3Days').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -336,7 +336,7 @@
         window.onload = function () {
             renderChartTemperature1Day();
           
-            renderChartTemperature7Days();
+            renderChartTemperature3Days();
           
             renderChartTemperature21Days();
           
@@ -357,7 +357,7 @@
 
 <!-- Additional chart for 3 days -->
 <div class="chart-container">
-    <canvas id="myChartTemperature7Days" width="900" height="600"></canvas>
+    <canvas id="myChartTemperature3Days" width="900" height="600"></canvas>
 </div>
 
 
