@@ -34,12 +34,12 @@
     <!-- Include Chart.js annotation plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
     <script>
-        async function fetchData(field) {
+        async function fetchData(field, days) {
             try {
-                const response = await fetch('https://api.thingspeak.com/channels/1658417/feeds.json?days=5&apikey=6WROQE1H57IRJ1GF');
+                const response = await fetch(`https://api.thingspeak.com/channels/1658417/feeds.json?days=${days}&apikey=6WROQE1H57IRJ1GF`);
                 const data = await response.json();
-                
-               // Map data and filter out invalid temperature values (-127)
+
+                // Map data and filter out invalid temperature values (-127)
                 return data.feeds
                     .map(feed => ({
                         x: new Date(feed.created_at),
@@ -64,10 +64,8 @@
             return stepSize;
         }
 
-        
-
-        async function renderChartTemperature() {
-            const data = await fetchData('field1'); // Read data from field1
+        async function renderChartTemperature1Day() {
+            const data = await fetchData('field1', 1); // Read data from field1 for the last 1 day
 
             const lastDataPoint = data[data.length - 1];
 
@@ -78,7 +76,7 @@
 
             const stepSize = calculateStepSize(data); // Calculate dynamic step size
 
-            const ctx = document.getElementById('myChartTemperature').getContext('2d');
+            const ctx = document.getElementById('myChartTemperature1Day').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -88,7 +86,6 @@
                         borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
                         borderWidth: 3, // Increase borderWidth to 6
                         fill: false,
-                        // pointRadius: 0
                         tension: 0.4
                     }]
                 },
@@ -102,11 +99,11 @@
                         x: {
                             type: 'time',
                             time: {
-                                unit: 'day',
+                                unit: 'hour',
                                 displayFormats: {
-                                    day: 'DD-MM'
+                                    hour: 'HH:mm'
                                 },
-                                tooltipFormat: 'DD-MM'
+                                tooltipFormat: 'HH:mm'
                             },
                             title: {
                                 display: true,
@@ -131,7 +128,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: 'Temperatur [°C]', 
+                                text: 'Temperatur [°C]',
                                 font: {
                                     size: 40, // Increase font size to 40
                                     color: 'black'
@@ -144,7 +141,181 @@
                                 },
                                 stepSize: stepSize, // Set dynamic step size
                                 callback: function(value, index, values) {
-                                    return value.toFixed(1); // One decimal place
+                                    return value.toFixed(0); // no decimal place
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        
+
+        
+
+        async function renderChartTemperature7Days() {
+            const data = await fetchData('field1', 7); // Read data from field1 for the last 7 days
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartTemperature7Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 3-day chart
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperatur [°C]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                stepSize: stepSize,
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        async function renderChartTemperature21Days() {
+            const data = await fetchData('field1', 21); // Read data from field1 for the last 21 days
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartTemperature21Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 21-day chart
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperatur [°C]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                stepSize: stepSize,
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
                                 }
                             },
                             grid: {
@@ -160,8 +331,15 @@
 
         
 
+
+
         window.onload = function () {
-            renderChartTemperature();
+            renderChartTemperature1Day();
+          
+            renderChartTemperature7Days();
+          
+            renderChartTemperature21Days();
+          
         };
     </script>
 </head>
@@ -170,12 +348,26 @@
 <!-- Main title for the page -->
 <h1 class="main-title">Outdoor</h1>
 
-
 <!-- Header to display the last Temperature value using h1 -->
 <h1 id="chartHeaderTemperature" class="chart-header">Temperatur</h1>
 <div class="chart-container">
-    <canvas id="myChartTemperature" width="900" height="600"></canvas>
+    <canvas id="myChartTemperature1Day" width="900" height="600"></canvas>
 </div>
+
+
+<!-- Additional chart for 3 days -->
+<div class="chart-container">
+    <canvas id="myChartTemperature7Days" width="900" height="600"></canvas>
+</div>
+
+
+
+<!-- Additional chart for 7 days -->
+<div class="chart-container">
+    <canvas id="myChartTemperature21Days" width="900" height="600"></canvas>
+</div>
+
+
 
 
 </body>
