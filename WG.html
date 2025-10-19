@@ -250,6 +250,174 @@
             });
         }
 
+        async function renderChartHumidity3Days() {
+            const data = await fetchData('field2', 3); // Read data from field2 for the last 3 day
+
+            
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartHumidity3Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for humidity chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Luftfeuchtigkeit [%]', 
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0); // No decimal places
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartHumidity7Days() {
+            const data = await fetchData('field2', 7); // Read data from field2 for the last 7 day
+
+                        const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartHumidity7Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for humidity chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Luftfeuchtigkeit [%]', 
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0); // No decimal places
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
 
         async function renderChartTemperature3Days() {
             const data = await fetchData('field1', 3); // Read data from field1 for the last 3 days
@@ -428,7 +596,9 @@
             renderChartTemperature1Day();
             renderChartHumidity1Day();
             renderChartTemperature3Days();
+            renderChartHumidity3Days();
             renderChartTemperature7Days();
+            renderChartHumidity7Days();
         };
     </script>
 </head>
@@ -454,9 +624,17 @@
     <canvas id="myChartTemperature3Days" width="900" height="600"></canvas>
 </div>
 
+<div class="chart-container">
+    <canvas id="myChartHumidity3Days" width="900" height="600"></canvas>
+</div>
+
 <!-- Additional chart for 7 days -->
 <div class="chart-container">
     <canvas id="myChartTemperature7Days" width="900" height="600"></canvas>
+</div>
+
+<div class="chart-container">
+    <canvas id="myChartHumidity7Days" width="900" height="600"></canvas>
 </div>
 
 
