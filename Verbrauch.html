@@ -23,6 +23,11 @@
             font-size: 58px;
             margin-bottom: 20px;
         }
+        h2.last-value {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -49,6 +54,13 @@
             }
         }
 
+        function updateLastValue(elementId, prefix, value, unit, decimals) {
+            const el = document.getElementById(elementId);
+            if (!el || value === undefined) return;
+
+            el.innerHTML = `${prefix}: ${value.toFixed(decimals)} ${unit}`;
+        }
+
         function createChart(ctx, data, yLabel, decimals, colors, timeUnit) {
             new Chart(ctx, {
                 type: 'line',
@@ -66,16 +78,9 @@
                 options: {
                     plugins: {
                         legend: { display: false },
-
-                        /* 🔍 Mouse-Over / Tooltip */
                         tooltip: {
-                            titleFont: {
-                                size: 28
-                            },
-                            bodyFont: {
-                                size: 36,
-                                weight: 'bold'
-                            },
+                            titleFont: { size: 28 },
+                            bodyFont: { size: 36, weight: 'bold' },
                             padding: 14,
                             displayColors: false
                         }
@@ -90,9 +95,7 @@
                                     hour: 'HH:mm'
                                 }
                             },
-                            ticks: {
-                                font: { size: 25 }
-                            }
+                            ticks: { font: { size: 25 } }
                         },
                         y: {
                             title: {
@@ -112,18 +115,15 @@
 
         async function renderAllCharts() {
 
-            const power24 = await fetchData(
-                1927492, 'S0EWJ14ZBRUVTZ0O', 'field2', 'days=1'
-            );
-            const gas24 = await fetchData(
-                1933511, '0L9MP1T81RBMXT1C', 'field2', 'days=1'
-            );
-            const power120 = await fetchData(
-                1927492, 'S0EWJ14ZBRUVTZ0O', 'field2', 'minutes=120'
-            );
-            const gas120 = await fetchData(
-                1933511, '0L9MP1T81RBMXT1C', 'field2', 'minutes=120'
-            );
+            const power24 = await fetchData(1927492, 'S0EWJ14ZBRUVTZ0O', 'field2', 'days=1');
+            const gas24   = await fetchData(1933511, '0L9MP1T81RBMXT1C', 'field2', 'days=1');
+            const power120 = await fetchData(1927492, 'S0EWJ14ZBRUVTZ0O', 'field2', 'minutes=120');
+            const gas120   = await fetchData(1933511, '0L9MP1T81RBMXT1C', 'field2', 'minutes=120');
+
+            updateLastValue('lvPower24', 'Strom', power24.at(-1)?.y, 'W', 0);
+            updateLastValue('lvGas24',   'Gas',   gas24.at(-1)?.y,   'm³/10min', 2);
+            updateLastValue('lvPower120','Strom', power120.at(-1)?.y,'W', 0);
+            updateLastValue('lvGas120',  'Gas',   gas120.at(-1)?.y,  'm³/10min', 2);
 
             createChart(
                 document.getElementById('chartPower24'),
@@ -170,22 +170,26 @@
 
 <h1 class="main-title">Verbrauch</h1>
 
-<h1 class="chart-header">Strom – letzte 24 Stunden</h1>
+<h2 id="lvPower24" class="last-value"></h2>
+<!-- <h1 class="chart-header">Strom – letzte 24 Stunden</h1> -->
 <div class="chart-container">
     <canvas id="chartPower24" width="900" height="600"></canvas>
 </div>
 
-<h1 class="chart-header">Gas – letzte 24 Stunden</h1>
+<h2 id="lvGas24" class="last-value"></h2>
+<!-- <h1 class="chart-header">Gas – letzte 24 Stunden</h1> -->
 <div class="chart-container">
     <canvas id="chartGas24" width="900" height="600"></canvas>
 </div>
 
-<h1 class="chart-header">Strom – letzte 120 Minuten</h1>
+<h2 id="lvPower120" class="last-value"></h2>
+<!-- <h1 class="chart-header">Strom – letzte 120 Minuten</h1> -->
 <div class="chart-container">
     <canvas id="chartPower120" width="900" height="600"></canvas>
 </div>
 
-<h1 class="chart-header">Gas – letzte 120 Minuten</h1>
+<h2 id="lvGas120" class="last-value"></h2>
+<!-- <h1 class="chart-header">Gas – letzte 120 Minuten</h1> -->
 <div class="chart-container">
     <canvas id="chartGas120" width="900" height="600"></canvas>
 </div>
