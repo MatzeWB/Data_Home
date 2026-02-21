@@ -175,6 +175,12 @@
             <td>&nbsp;</td>
         </tr>
         <tr>
+            <td><b><a href="Akku.html" class="no-underline">Akku</a></b></td>
+            <td><span id="Akku_Percent"></span> %</td>
+            <td></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
             <td><b><a href="Verbrauch.html" class="no-underline">Gas</a></b></td>
             <td><span id="heat"></span> m&sup3/10min</td>
             <td>(VT: <span id="heat_vt"></span> m&sup3)</td>
@@ -265,7 +271,9 @@
             'Power': 'https://api.thingspeak.com/channels/1927492/fields/2/last.json?api_key=S0EWJ14ZBRUVTZ0O',
             'Power_VT': 'https://api.thingspeak.com/channels/1967479/fields/1/last.json?api_key=SMC8MLG4MPL18AMQ',
             'Heat': 'https://api.thingspeak.com/channels/1933511/fields/2/last.json?api_key=M0GU27NYGAZ7CDEA',
-            'Heat_VT': 'https://api.thingspeak.com/channels/1933511/fields/3/last.json?api_key=M0GU27NYGAZ7CDEA'
+            'Heat_VT': 'https://api.thingspeak.com/channels/1933511/fields/3/last.json?api_key=M0GU27NYGAZ7CDEA',
+
+            'Akku_Percent': 'https://api.thingspeak.com/channels/3272548/fields/1/last.json?api_key=9S676J7J6NRC0RAK'
         };
 
         // Time limits for each sensor
@@ -280,7 +288,8 @@
             'row_Keller': 400,
             'row_Schuppen': 4000,
             'row_Pool': 4000,
-            'row_Radon': 700
+            'row_Radon': 700,
+            'row_Akku': 120
         };
 
         async function fetchData(url, elementId, field) {
@@ -295,7 +304,7 @@
 
                 if (elementId.startsWith("heat")) {
                     document.getElementById(elementId).textContent = value.toFixed(2);
-                } else if (elementId.startsWith("hum_") || elementId.startsWith("radon_") || elementId === "co2_SZ" || elementId === "power" || elementId === "co2_B") {
+                } else if (elementId.startsWith("hum_") || elementId.startsWith("radon_") || elementId === "co2_SZ" || elementId === "power" || elementId === "Akku_Percent" || elementId === "co2_B") {
                     document.getElementById(elementId).textContent = value.toFixed(0);
                 } else {
                     document.getElementById(elementId).textContent = value.toFixed(1);
@@ -325,7 +334,7 @@
         }
 
         async function highlightRowsIfOld(times) {
-            const [time_out, time_WZ, time_SZ, time_BadU, time_AZ, time_B, time_WG, time_Keller, time_Schuppen, time_Pool, time_Radon] = times;
+            const [time_out, time_WZ, time_SZ, time_BadU, time_AZ, time_B, time_WG, time_Keller, time_Schuppen, time_Pool, time_Radon, time_Akku] = times;
 
             const rows = {
                 'row_out': time_out,
@@ -338,7 +347,8 @@
                 'row_Keller': time_Keller,
                 'row_Schuppen': time_Schuppen,
                 'row_Pool': time_Pool,
-                'row_Radon': time_Radon
+                'row_Radon': time_Radon,
+                'row_Akku': time_Akku
             };
 
             Object.entries(rows).forEach(([rowId, timeValue]) => {
@@ -377,7 +387,9 @@
                 fetchData(api_urls.Power, 'power', 'field2'),
                 fetchData(api_urls.Power_VT, 'power_vt', 'field1'),
                 fetchData(api_urls.Heat, 'heat', 'field2'),
-                fetchData(api_urls.Heat_VT, 'heat_vt', 'field3')
+                fetchData(api_urls.Heat_VT, 'heat_vt', 'field3'),
+                fetchData(api_urls.Akku_Percent, 'Akku_Percent', 'field1')
+
             ];
 
             const fetchTimePromises = [
@@ -391,7 +403,8 @@
                 fetchTime(api_urls.time_Keller, 'time_Keller'),
                 fetchTime(api_urls.temp_Schuppen_Time, 'temp_Schuppen_Time'),
                 fetchTime(api_urls.time_Pool, 'time_Pool'),
-                fetchTime(api_urls.time_radon, 'time_Radon')
+                fetchTime(api_urls.time_radon, 'time_Radon'),
+                fetchTime(api_urls.time_Akku, 'time_Akku')
             ];
 
             await Promise.all(fetchDataPromises);
