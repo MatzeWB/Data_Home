@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Charts</title>
+    <meta charset="UTF-8">
+    <style>
+        .chart-container {
+            width: 90%;
+            margin: auto;
+        }
+        .chart-container:not(:last-of-type) {
+            margin-bottom: 100px; /* Increase the spacing between the charts to 100px for all but the last chart */
+        }
+        .main-title {
+            text-align: center;
+            font-size: 72px; /* Slightly larger font size for the main title */
+            margin-top: 20px;
+            margin-bottom: 50px; /* Increase margin-bottom for more distance below the main title */
+            visibility: visible; /* Ensure the main title is visible */
+        }
+        h1.chart-header {
+            text-align: center;
+            font-size: 58px; /* Increase the font size to 58 */
+            margin-bottom: 20px; /* Increase margin-bottom to 20 */
+            visibility: hidden; /* Hide the headers initially */
+        }
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+    <!-- Include Chart.js date adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Chart.js annotation plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script>
+        async function fetchData(field, days) {
+            try {
+                const response = await fetch(`https://api.thingspeak.com/channels/3272548/feeds.json?days=${days}&apikey=9S676J7J6NRC0RAK`);
+                const data = await response.json();
+
+                // Map data and filter out invalid temperature values (-127)
+                return data.feeds
+                    .map(feed => ({
+                        x: new Date(feed.created_at),
+                        y: parseFloat(feed[field])
+                    }))
+                    .filter(point => point.y !== -127); // Exclude invalid values
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return [];
+            }
+        }
+
+        function calculateStepSize(data) {
+            const yValues = data.map(point => point.y);
+            const minY = Math.min(...yValues);
+            const maxY = Math.max(...yValues);
+            const rangeY = maxY - minY;
+
+            const desiredTicks = 5; // Desired number of ticks
+            const stepSize = Math.max(1, Math.ceil(rangeY / desiredTicks));
+
+            return stepSize;
+        }
+
+        async function renderChartAkku1Day() {
+            const data = await fetchData('field1', 1); // Read data from field1 for the last 1 day
+
+            const lastDataPoint = data[data.length - 1];
+
+            // Update the header with the last value (no decimal place) 
+            const headerTemperature = document.getElementById('chartHeaderTemperature');
+            headerTemperature.innerText = `${lastDataPoint.y.toFixed(0)}%`;
+            headerTemperature.style.visibility = 'visible'; // Show the header
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkku1Day').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Akku-Stand [%]',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0); // no decimal place
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        
+
+        
+
+        async function renderChartAkku3Days() {
+            const data = await fetchData('field1', 3); // Read data from field1 for the last 3 days
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkku3Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 3-day chart
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Akku-Stand [%]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                stepSize: stepSize,
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        async function renderChartAkku21Days() {
+            const data = await fetchData('field1', 21); // Read data from field1 for the last 21 days
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkku21Days').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 21-day chart
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'DD-MM'
+                                },
+                                tooltipFormat: 'DD-MM'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Akku-Stand [%]',
+                                font: {
+                                    size: 40,
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25,
+                                    color: 'black'
+                                },
+                                stepSize: stepSize,
+                                callback: function(value, index, values) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        
+
+
+
+        window.onload = function () {
+            renderChartAkku1Day();
+          
+            renderChartAkku3Days();
+          
+            renderChartAkku21Days();
+          
+        };
+    </script>
+</head>
+<body>
+
+<!-- Main title for the page -->
+<h1 class="main-title">Akku Stand</h1>
+
+<!-- Header to display the last Temperature value using h1 -->
+<h1 id="chartHeaderTemperature" class="chart-header">Akku</h1>
+<div class="chart-container">
+    <canvas id="myChartAkku1Day" width="900" height="600"></canvas>
+</div>
+
+
+<!-- Additional chart for 3 days -->
+<div class="chart-container">
+    <canvas id="myChartAkku3Days" width="900" height="600"></canvas>
+</div>
+
+
+
+<!-- Additional chart for 7 days -->
+<div class="chart-container">
+    <canvas id="myChartAkku21Days" width="900" height="600"></canvas>
+</div>
+
+
+
+
+</body>
+</html>
+
