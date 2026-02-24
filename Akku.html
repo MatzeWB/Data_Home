@@ -83,7 +83,7 @@
                     datasets: [{
                         label: '',
                         data: data,
-                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for temperature chart
                         borderWidth: 3, // Increase borderWidth to 6
                         fill: false,
                         tension: 0.4
@@ -155,6 +155,91 @@
             });
         }
 
+         async function renderChartAkkuTemp1Day() {
+            const data = await fetchData('field2', 1); // Read data from field1 for the last 1 day
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkkuTemp1Day').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Akku-Temp [°C]',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(1); // no decimal place
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
 
         
 
@@ -172,7 +257,7 @@
                     datasets: [{
                         label: '',
                         data: data,
-                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 3-day chart
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for 3-day chart
                         borderWidth: 3,
                         fill: false,
                         tension: 0.4
@@ -257,7 +342,7 @@
                     datasets: [{
                         label: '',
                         data: data,
-                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for 21-day chart
+                        borderColor: 'rgba(54, 162, 235, 1)', // Different color for 21-day chart
                         borderWidth: 3,
                         fill: false,
                         tension: 0.4
@@ -335,6 +420,8 @@
 
         window.onload = function () {
             renderChartAkku1Day();
+
+            renderChartAkkuTemp1Day();
           
             renderChartAkku3Days();
           
@@ -352,6 +439,11 @@
 <h1 id="chartHeaderTemperature" class="chart-header">Akku</h1>
 <div class="chart-container">
     <canvas id="myChartAkku1Day" width="900" height="600"></canvas>
+</div>
+
+<!-- Additional chart for 3 days -->
+<div class="chart-container">
+    <canvas id="myChartAkkuTemp1Day" width="900" height="600"></canvas>
 </div>
 
 
