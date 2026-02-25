@@ -177,7 +177,7 @@
         <tr>
             <td><b><a href="Akku.html" class="no-underline">Akku</a></b></td>
             <td><span id="Akku_Percent"></span> %</td>
-            <td></td>
+            <td><span id="Akku_Temp"></span>°C</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
@@ -273,7 +273,8 @@
             'Heat': 'https://api.thingspeak.com/channels/1933511/fields/2/last.json?api_key=M0GU27NYGAZ7CDEA',
             'Heat_VT': 'https://api.thingspeak.com/channels/1933511/fields/3/last.json?api_key=M0GU27NYGAZ7CDEA',
 
-            'Akku_Percent': 'https://api.thingspeak.com/channels/3272548/fields/1/last.json?api_key=9S676J7J6NRC0RAK'
+            'Akku_Percent': 'https://api.thingspeak.com/channels/3272548/fields/1/last.json?api_key=9S676J7J6NRC0RAK',
+            'Akku_Temp': 'https://api.thingspeak.com/channels/3272548/fields/2/last.json?api_key=9S676J7J6NRC0RAK'
         };
 
         // Time limits for each sensor
@@ -388,7 +389,8 @@
                 fetchData(api_urls.Power_VT, 'power_vt', 'field1'),
                 fetchData(api_urls.Heat, 'heat', 'field2'),
                 fetchData(api_urls.Heat_VT, 'heat_vt', 'field3'),
-                fetchData(api_urls.Akku_Percent, 'Akku_Percent', 'field1')
+                fetchData(api_urls.Akku_Percent, 'Akku_Percent', 'field1'),
+                fetchData(api_urls.Akku_Temp, 'Akku_Temp', 'field2')
 
             ];
 
