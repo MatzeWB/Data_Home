@@ -225,7 +225,7 @@
                                 },
                                 stepSize: stepSize, // Set dynamic step size
                                 callback: function(value, index, values) {
-                                    return value.toFixed(1); // no decimal place
+                                    return value.toFixed(2); // no decimal place
                                 }
                             },
                             grid: {
@@ -238,6 +238,91 @@
                 }
             });
         }
+
+        async function renderChartAkkuVolt1Day() {
+            const data = await fetchData('field3', 1); // Read data from field1 for the last 1 day
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkkuVolt1Day').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(0, 255, 0, 1)', // Different color for voltage chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Akku-Spannung [V]',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(2); // no decimal place
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
 
 
 
@@ -385,8 +470,8 @@
                             }
                         },
                         y: {
-min: 0,
-max: 100,
+                            min: 0,
+                            max: 100,
                             title: {
                                 display: true,
                                 text: 'Akku-Stand [%]',
@@ -424,6 +509,8 @@ max: 100,
             renderChartAkku1Day();
 
             renderChartAkkuTemp1Day();
+
+            renderChartAkkuVolt1Day();
           
             renderChartAkku3Days();
           
@@ -446,6 +533,11 @@ max: 100,
 <!-- Additional chart for 3 days -->
 <div class="chart-container">
     <canvas id="myChartAkkuTemp1Day" width="900" height="600"></canvas>
+</div>
+
+<!-- Additional chart for 3 days -->
+<div class="chart-container">
+    <canvas id="myChartAkkuVolt1Day" width="900" height="600"></canvas>
 </div>
 
 
