@@ -71,7 +71,7 @@
 
             // Update the header with the last value (one decimal place) and "°C"
             const headerTemperature = document.getElementById('chartHeaderTemperature');
-            headerTemperature.innerText = `Temperatur: ${lastDataPoint.y.toFixed(1)}°C`;
+            headerTemperature.innerText = `Temperatur: ${lastDataPoint.y.toFixed(2)}°C`;
             headerTemperature.style.visibility = 'visible'; // Show the header
 
             const stepSize = calculateStepSize(data); // Calculate dynamic step size
