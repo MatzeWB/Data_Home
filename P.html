@@ -155,8 +155,8 @@
             });
         }
 
-        async function renderChartTemperature14Days() {
-            const data = await fetchData('field1', 14); // Read data from field1 for the last 7 days
+        async function renderChartTemperature21Days() {
+            const data = await fetchData('field1', 21); // Read data from field1 for the last 21 days
 
             const stepSize = calculateStepSize(data); // Calculate dynamic step size
 
