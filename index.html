@@ -284,13 +284,12 @@
             'row_SZ': 120,
             'row_BadU': 120,
             'row_AZ': 120,
-            'row_B': 700,
+            'row_B': 800,
             'row_WG': 120,
             'row_Keller': 400,
             'row_Schuppen': 4000,
             'row_Pool': 4000,
-            'row_Radon': 700,
-            'row_Akku': 120
+            'row_Radon': 700
         };
 
         async function fetchData(url, elementId, field) {
@@ -348,8 +347,7 @@
                 'row_Keller': time_Keller,
                 'row_Schuppen': time_Schuppen,
                 'row_Pool': time_Pool,
-                'row_Radon': time_Radon,
-                'row_Akku': time_Akku
+                'row_Radon': time_Radon
             };
 
             Object.entries(rows).forEach(([rowId, timeValue]) => {
@@ -389,8 +387,7 @@
                 fetchData(api_urls.Power_VT, 'power_vt', 'field1'),
                 fetchData(api_urls.Heat, 'heat', 'field2'),
                 fetchData(api_urls.Heat_VT, 'heat_vt', 'field3'),
-                fetchData(api_urls.Akku_Percent, 'Akku_Percent', 'field1'),
-                fetchData(api_urls.Akku_Temp, 'Akku_Temp', 'field2')
+                fetchData(api_urls.Akku_Percent, 'Akku_Percent', 'field1')
 
             ];
 
@@ -405,8 +402,7 @@
                 fetchTime(api_urls.time_Keller, 'time_Keller'),
                 fetchTime(api_urls.temp_Schuppen_Time, 'temp_Schuppen_Time'),
                 fetchTime(api_urls.time_Pool, 'time_Pool'),
-                fetchTime(api_urls.time_radon, 'time_Radon'),
-                fetchTime(api_urls.time_Akku, 'time_Akku')
+                fetchTime(api_urls.time_radon, 'time_Radon')
             ];
 
             await Promise.all(fetchDataPromises);
