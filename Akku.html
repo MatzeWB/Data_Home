@@ -155,6 +155,176 @@
             });
         }
 
+        async function renderChartAkkumaxVolt1Day() {
+            const data = await fetchData('field4', 1); // Read data from field1 for the last 1 day
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkkumaxVolt1Day').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'max Voltage [V]',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(2); // no decimal place
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function renderChartAkkuminVolt1Day() {
+            const data = await fetchData('field5', 1); // Read data from field1 for the last 1 day
+
+            const stepSize = calculateStepSize(data); // Calculate dynamic step size
+
+            const ctx = document.getElementById('myChartAkkuminVolt1Day').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '',
+                        data: data,
+                        borderColor: 'rgba(255, 99, 132, 1)', // Different color for temperature chart
+                        borderWidth: 3, // Increase borderWidth to 6
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                displayFormats: {
+                                    hour: 'HH:mm'
+                                },
+                                tooltipFormat: 'HH:mm'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'min Voltage [V]',
+                                font: {
+                                    size: 40, // Increase font size to 40
+                                    color: 'black'
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 25, // Increase font size to 25
+                                    color: 'black'
+                                },
+                                stepSize: stepSize, // Set dynamic step size
+                                callback: function(value, index, values) {
+                                    return value.toFixed(2); // no decimal place
+                                }
+                            },
+                            grid: {
+                                drawBorder: true,
+                                borderColor: 'black',
+                                borderWidth: 3
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        
          async function renderChartAkkuTemp1Day() {
             const data = await fetchData('field2', 1); // Read data from field1 for the last 1 day
 
@@ -508,6 +678,10 @@
         window.onload = function () {
             renderChartAkku1Day();
 
+            renderChartAkkumaxVolt1Day();
+
+            renderChartAkkuminVolt1Day();
+
             renderChartAkkuTemp1Day();
 
             renderChartAkkuVolt1Day();
@@ -528,6 +702,15 @@
 <h1 id="chartHeaderTemperature" class="chart-header">Akku</h1>
 <div class="chart-container">
     <canvas id="myChartAkku1Day" width="900" height="600"></canvas>
+</div>
+
+
+<div class="chart-container">
+    <canvas id="myChartAkkumaxVolt1Day" width="900" height="600"></canvas>
+</div>
+
+<div class="chart-container">
+    <canvas id="myChartAkkuminVolt1Day" width="900" height="600"></canvas>
 </div>
 
 <!-- Additional chart for 3 days -->
